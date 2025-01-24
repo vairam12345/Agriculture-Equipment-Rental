@@ -1,40 +1,65 @@
-<?php
-require 'config.php';
-
-// Check database connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-// Handle booking
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['book_id'])) {
-    $equipmentId = intval($_POST['book_id']); // Sanitize input
-
-    // Prepare statement to avoid SQL injection
-    $stmt = $conn->prepare("UPDATE equipment SET availability = 0 WHERE id = ?");
-    $stmt->bind_param("i", $equipmentId); // Bind the integer parameter to the query
-
-    if ($stmt->execute()) {
-        echo "<script>alert('Booking successful!');</script>";
-    } else {
-        echo "<script>alert('Error during booking.');</script>";
-    }
-
-    $stmt->close(); // Close the prepared statement
-}
-
-// Fetch available equipment
-$sql = "SELECT * FROM equipment WHERE availability = 1";
-$result = $conn->query($sql);
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agriculture Equipment Rental</title>
-    <link rel="stylesheet" href="assets/style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 12px;
+            text-align: center;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .booked {
+            background-color: #f44336;
+            color: white;
+        }
+        .available {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .btn {
+            padding: 8px 15px;
+            text-decoration: none;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-book {
+            background-color: #4CAF50;
+        }
+        .btn-cancel {
+            background-color: #f44336;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -42,38 +67,63 @@ $result = $conn->query($sql);
         <table>
             <thead>
                 <tr>
-                    <th>Equipment Name</th>
+                    <th>Name</th>
                     <th>Type</th>
                     <th>Price/Day</th>
+                    <th>Status</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody>
-                <?php if ($result->num_rows > 0): ?>
-                    <?php while ($row = $result->fetch_assoc()): ?>
-                        <tr>
-                            <td><?php echo htmlspecialchars($row['name']); ?></td>
-                            <td><?php echo htmlspecialchars($row['type']); ?></td>
-                            <td>$<?php echo number_format($row['price_per_day'], 2); ?></td>
-                            <td>
-                                <form method="post" style="display: inline;">
-                                    <input type="hidden" name="book_id" value="<?php echo $row['id']; ?>">
-                                    <button type="submit" class="book-btn">Book</button>
-                                </form>
-                            </td>
-                        </tr>
-                    <?php endwhile; ?>
-                <?php else: ?>
-                    <tr>
-                        <td colspan="4">No equipment available at the moment.</td>
-                    </tr>
-                <?php endif; ?>
+                <?php
+                $servername = "localhost";
+                $username = "Test";
+                $password = "Test@123";
+                $dbname = "rental_management";
+
+                $conn = new mysqli($servername, $username, $password, $dbname);
+                if ($conn->connect_error) {
+                    die("Connection failed: " . $conn->connect_error);
+                }
+
+                if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+                    $id = $_POST['id'];
+                    if ($_POST['action'] == 'book') {
+                        $conn->query("UPDATE equipment SET availability = 0 WHERE id = $id");
+                    } elseif ($_POST['action'] == 'cancel') {
+                        $conn->query("UPDATE equipment SET availability = 1 WHERE id = $id");
+                    }
+                }
+
+                $result = $conn->query("SELECT * FROM equipment");
+                while ($row = $result->fetch_assoc()) {
+                    echo "<tr>";
+                    echo "<td>{$row['name']}</td>";
+                    echo "<td>{$row['type']}</td>";
+                    echo "<td>\${$row['price_per_day']}</td>";
+                    echo "<td class='" . ($row['availability'] ? "available" : "booked") . "'>" . ($row['availability'] ? "Available" : "Booked") . "</td>";
+                    echo "<td>";
+                    if ($row['availability']) {
+                        echo "<form method='POST' style='display:inline;'>
+                                <input type='hidden' name='id' value='{$row['id']}'>
+                                <input type='hidden' name='action' value='book'>
+                                <button class='btn btn-book' type='submit'>Book</button>
+                              </form>";
+                    } else {
+                        echo "<form method='POST' style='display:inline;'>
+                                <input type='hidden' name='id' value='{$row['id']}'>
+                                <input type='hidden' name='action' value='cancel'>
+                                <button class='btn btn-cancel' type='submit'>Cancel</button>
+                              </form>";
+                    }
+                    echo "</td>";
+                    echo "</tr>";
+                }
+
+                $conn->close();
+                ?>
             </tbody>
         </table>
     </div>
 </body>
 </html>
-
-<?php
-$conn->close(); // Close the database connection
-?>

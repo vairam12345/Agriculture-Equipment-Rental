@@ -1,80 +1,88 @@
+/* General Styles */
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f9;
-    color: #333;
     margin: 0;
-    padding: 20px;
-}
-
-.container {
-    max-width: 900px;
-    margin: 0 auto;
-    background: #fff;
-    padding: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    border-radius: 8px;
-}
-
-h1 {
-    text-align: center;
+    padding: 0;
+    background-color: #f4f9f9;
     color: #333;
-    margin-bottom: 20px;
 }
 
-#searchBar {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 20px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+/* Navbar */
+.navbar {
+    background-color: #0077b6;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
 }
 
+.navbar .logo {
+    height: 50px;
+    margin-right: 20px;
+}
+
+.navbar h1 {
+    font-size: 24px;
+    margin: 0;
+}
+
+/* Container */
+.container {
+    max-width: 800px;
+    margin: 20px auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.container h2 {
+    text-align: center;
+    color: #005f73;
+}
+
+/* Table */
 table {
     width: 100%;
     border-collapse: collapse;
+    margin-top: 20px;
 }
 
 thead {
-    background-color: #007bff;
+    background-color: #023e8a;
     color: #fff;
 }
 
 th, td {
-    padding: 10px;
     text-align: left;
+    padding: 10px;
     border: 1px solid #ddd;
 }
 
-tr:nth-child(even) {
-    background-color: #f9f9f9;
+tbody tr:hover {
+    background-color: #caf0f8;
 }
 
-tr:hover {
-    background-color: #f1f1f1;
-}
-
-.btn {
-    padding: 8px 12px;
+/* Buttons */
+button {
     border: none;
-    border-radius: 4px;
+    padding: 8px 12px;
     cursor: pointer;
+    border-radius: 4px;
+    font-size: 14px;
+    margin-right: 5px;
 }
 
 .book-btn {
-    background-color: #28a745;
-    color: white;
-}
-
-.return-btn {
-    background-color: #dc3545;
+    background-color: #38b000;
     color: white;
 }
 
 .details-btn {
-    background-color: #17a2b8;
+    background-color: #00b4d8;
     color: white;
 }
 
-.btn:hover {
+button:hover {
     opacity: 0.9;
 }

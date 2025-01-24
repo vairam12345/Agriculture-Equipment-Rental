@@ -18,7 +18,7 @@ sudo chown -R www-data:www-data $APP_DIR
 sudo mysql -u root -p <<EOF
 CREATE DATABASE IF NOT EXISTS rental_management;
 USE rental_management;
-$(cat ../sql/database.sql)
+SOURCE ../sql/database.sql;
 EOF
 
 # Restart Apache

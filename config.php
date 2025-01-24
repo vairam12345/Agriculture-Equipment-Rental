@@ -1,7 +1,7 @@
 <?php
 $servername = "localhost";
-$username = "root";
-$password = "";
+$username = "Test";  // Changed to Test user
+$password = "Test@123";  // Updated password
 $dbname = "rental_management";
 
 $conn = new mysqli($servername, $username, $password, $dbname);

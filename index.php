@@ -1,15 +1,26 @@
 <?php
 require 'config.php';
 
+// Check database connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
 // Handle booking
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['book_id'])) {
-    $equipmentId = intval($_POST['book_id']);
-    $sql = "UPDATE equipment SET availability = 0 WHERE id = $equipmentId";
-    if ($conn->query($sql) === TRUE) {
+    $equipmentId = intval($_POST['book_id']); // Sanitize input
+
+    // Prepare statement to avoid SQL injection
+    $stmt = $conn->prepare("UPDATE equipment SET availability = 0 WHERE id = ?");
+    $stmt->bind_param("i", $equipmentId); // Bind the integer parameter to the query
+
+    if ($stmt->execute()) {
         echo "<script>alert('Booking successful!');</script>";
     } else {
         echo "<script>alert('Error during booking.');</script>";
     }
+
+    $stmt->close(); // Close the prepared statement
 }
 
 // Fetch available equipment
@@ -63,4 +74,6 @@ $result = $conn->query($sql);
 </body>
 </html>
 
-<?php $conn->close(); ?>
+<?php
+$conn->close(); // Close the database connection
+?>

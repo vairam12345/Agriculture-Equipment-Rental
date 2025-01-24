@@ -15,7 +15,7 @@ sudo cp -r ../* $APP_DIR
 sudo chown -R www-data:www-data $APP_DIR
 
 # Configure MySQL
-mysql -u root -p <<EOF
+sudo mysql -u root -p <<EOF
 CREATE DATABASE IF NOT EXISTS rental_management;
 USE rental_management;
 $(cat ../sql/database.sql)

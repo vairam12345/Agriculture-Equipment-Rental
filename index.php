@@ -4,13 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agriculture Equipment Rental</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
+    <nav class="navbar">
+        <img src="logo.png" alt="Logo" class="logo">
         <h1>Agriculture Equipment Rental</h1>
-        <input type="text" id="searchBar" placeholder="Search equipment..." onkeyup="filterTable()">
-        <table id="equipmentTable">
+    </nav>
+
+    <div class="container">
+        <h2>Available Equipment</h2>
+        <table>
             <thead>
                 <tr>
                     <th>Equipment Name</th>
@@ -21,69 +25,34 @@
             </thead>
             <tbody>
                 <?php
-                $conn = new mysqli("localhost", "root", "", "rental_management");
+                $conn = new mysqli("localhost", "root", "Test@123", "rental_management");
                 if ($conn->connect_error) {
                     die("Connection failed: " . $conn->connect_error);
                 }
 
-                $sql = "SELECT * FROM equipment";
+                $sql = "SELECT * FROM equipment WHERE availability = 1";
                 $result = $conn->query($sql);
 
                 if ($result->num_rows > 0) {
                     while ($row = $result->fetch_assoc()) {
                         echo "<tr>
-                            <td>{$row['name']}</td>
-                            <td>{$row['type']}</td>
-                            <td>\${$row['price_per_day']}</td>
-                            <td>";
-                        if ($row['availability']) {
-                            echo "<button class='btn book-btn' onclick='bookItem({$row['id']})'>Book</button>";
-                        } else {
-                            echo "<button class='btn return-btn' onclick='returnItem({$row['id']})'>Return</button>";
-                        }
-                        echo " <button class='btn details-btn' onclick='viewDetails({$row['id']})'>Details</button>
-                            </td>
-                        </tr>";
+                                <td>" . $row["name"] . "</td>
+                                <td>" . $row["type"] . "</td>
+                                <td>$" . number_format($row["price_per_day"], 2) . "</td>
+                                <td>
+                                    <button class='book-btn'>Book</button>
+                                    <button class='details-btn'>Details</button>
+                                </td>
+                              </tr>";
                     }
                 } else {
                     echo "<tr><td colspan='4'>No equipment available</td></tr>";
                 }
+
                 $conn->close();
                 ?>
             </tbody>
         </table>
     </div>
-
-    <script>
-        function bookItem(id) {
-            fetch(`book.php?id=${id}`)
-                .then(response => response.text())
-                .then(data => location.reload());
-        }
-
-        function returnItem(id) {
-            fetch(`return.php?id=${id}`)
-                .then(response => response.text())
-                .then(data => location.reload());
-        }
-
-        function viewDetails(id) {
-            alert(`Details for equipment ID: ${id}`);
-        }
-
-        function filterTable() {
-            const search = document.getElementById("searchBar").value.toLowerCase();
-            const rows = document.querySelectorAll("#equipmentTable tbody tr");
-
-            rows.forEach(row => {
-                const name = row.cells[0].textContent.toLowerCase();
-                if (name.includes(search)) {
-                    row.style.display = "";
-                } else {
-                    row.style.display = "none";
-                }
-            });
-        }
-    </script>
 </body>
 </html>
